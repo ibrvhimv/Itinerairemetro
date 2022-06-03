@@ -32,7 +32,6 @@ void loadtabTemps(double *tab, char* str , int i)
     }
   }
   tab[i] = atof(new_str);
-  printf("%lf  ; ",tab[i]);
 
 }
 void loadStation(STATION* station, char* str ,double *tab , int i)
@@ -169,6 +168,7 @@ void loadmetroXX(LIST *list,char* str , FILE* file , char a0 ,char b1 ,char c3)
       }
     }
   }
+  rewind(file);
   list->last->station.tempSuiv=0;
 }
 void loadmetroXbis(LIST *list,char* str , FILE* file , char a0 ,char b1 ,char c3)
@@ -200,8 +200,8 @@ void loadmetroXbis(LIST *list,char* str , FILE* file , char a0 ,char b1 ,char c3
       }
     }
   }
+  rewind(file);
   list->last->station.tempSuiv=0;
-        
 }
 
 
@@ -342,13 +342,58 @@ void loadListTab(LIST *tab , FILE *file)
         tab[i]=metro;
         break;
       case 32:
-        loadmetroXX(&metro, str, file, '1', '4', 'a');
+        loadmetroXX(&metro, str, file, '1', '4', 'b');
         tab[i]=metro;
         break;
-
       default:
         break;
     }
   }
     fclose(file);
+}
+void temps_entre_2stations(LIST *tab  , int num)
+{
+    STRING station1 ;
+    STRING station2 ;
+    int d=0;
+    printf("Veuillez taper le nom de la station de départ stp \n");
+    fgets(station1, 20, stdin);
+    station1[strlen(station1)-1]='\0';
+    printf("Veuillez taper le nom de la station d'arrivée stp \n");
+    fgets(station2, 20, stdin);
+    station2[strlen(station2)-1]='\0';
+  printf("%s \n",station1);
+  printf("%s \n",station2);
+  
+    NODE * node1;
+    NODE * node2;
+  
+  int y=0;
+  d=1;
+    double temps =0 ;
+  if(d==1)
+  {
+    node1=tab[num].first;
+    while (node1!=NULL && y!=1) {
+      if(strcmp(node1->station.nomS, station1)==0)
+      {
+        node2=node1->ssuiv;
+        temps=node2->station.tempSuiv;
+        while (node2!=NULL) {
+          if(strcmp(node2->station.nomS, station2)==0)
+          {
+            y=1;
+          }
+          node2=node2->ssuiv;
+          temps=temps+node2->station.tempSuiv;
+        }
+        
+      }
+      node1=node1->ssuiv;
+    }
+    
+  printf("Le temps entre ces 2 stations est %0.lf \n",temps);
+
+    
+  }
 }
