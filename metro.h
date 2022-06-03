@@ -49,4 +49,5 @@ void loadListTab(LIST *tab , FILE *file);
 void loadmetroX(LIST *list,char* str , FILE* file, char a0 ,char b1 ,char c2);
 void loadmetroXX(LIST *list,char* str , FILE* file , char a0 ,char b1 ,char c3);
 void loadmetroXbis(LIST *list,char* str , FILE* file , char a0 ,char b1 ,char c3);
+void temps_entre_2stations(LIST *tab  , int num);
 #endif /* metro_h */
