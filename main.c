@@ -17,19 +17,12 @@ int main(void)
   if(file != NULL)
   {
     loadListTab(tab, file);
-    
-//    loadmetroX(&metro, str, file, '1', ':', 'a');
-//    loadmetroXbis(&metro, str, file, '3', 'b', 'a');
-//    loadmetroXX(&metro, str, file, '1', '4', 'a');
-//    loadmetroX(&metro, str, file, '4', ':', 'b');
       fclose(file);
   }
   else
   {
     printf("Impossible d'ouvrir le fichier \n ");
   }
-//  printList(metro);
-  printList(tab[4]);
+  temps_entre_2stations(tab, 1);
   return 0;
 }
-
