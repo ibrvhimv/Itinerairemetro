@@ -18,6 +18,7 @@ typedef char STRING[CHAI];
 typedef struct _STATION
 {
   STRING nomS;
+  double horaire;
   double tempSuiv;
   double tempPrec;
 } STATION;
@@ -32,6 +33,23 @@ typedef struct
   PNODE first;
   PNODE last;
 }LIST;
+typedef struct _STATION_RES
+{
+  STRING nomS;
+  int poids ;
+  struct _STATION_RES *parent;
+}STATIONRES,*PSTATIONRES;
+typedef struct _SNODE
+{
+  STATIONRES station;
+  struct _SNODE *ssuiv;
+  struct _SNODE *sprec;
+}SNODE ,*PSNODE;
+typedef struct
+{
+  PSNODE first;
+  PSNODE last;
+}SLIST;
 typedef struct _TabLigne
 {
   STRING nameLigne;
@@ -50,4 +68,11 @@ void loadmetroX(LIST *list,char* str , FILE* file, char a0 ,char b1 ,char c2);
 void loadmetroXX(LIST *list,char* str , FILE* file , char a0 ,char b1 ,char c3);
 void loadmetroXbis(LIST *list,char* str , FILE* file , char a0 ,char b1 ,char c3);
 void temps_entre_2stations(LIST *tab  , int num);
-#endif /* metro_h */
+void remplireserve(STATIONRES *tab,LIST *tab1);
+void reechercheitineraire(SLIST reserve,LIST *tab1 , STRING depart , STRING arrive);
+SLIST rempliReserve(LIST *tab1);
+void printSList(SLIST list );
+PSNODE suprimerDoublons(PSNODE snode1, STRING name);
+
+
+ #endif /* metro_h */
