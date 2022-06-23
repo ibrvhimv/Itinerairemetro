@@ -14,6 +14,7 @@ void printStation(STATION station , int num )
   printf("Nom de la station : %s \n",station.nomS);
   printf("Temps pour aller à la station précédente: %.0f min\n", station.tempPrec);
   printf("Temps pour aller à la station suivante : %.0f min\n",station.tempSuiv);
+  printf("Heure de début : %lf " , station.horaire);
 }
 void loadtabTemps(double *tab, char* str , int i)
 {
@@ -42,6 +43,10 @@ void loadStation(STATION* station, char* str ,double *tab , int i)
 //  memset(tab, 0, 100*sizeof(int));
   strncpy(station->nomS,new_str,CHAI);
 //  printf("%lf - %lf = %lf \n" ,tab[i+1],tab[i], tab[i+1]-tab[i]);
+  new_str = strtok(NULL, ":");
+  new_str = strtok(NULL, ":");
+  new_str = strtok(NULL, ":");
+  station->horaire=atof(new_str);
   station->tempSuiv=tab[i+1]-tab[i];
   if(tab[i+1]-tab[i]>0.1)
   {
@@ -85,6 +90,8 @@ void appendToListSTation(LIST* list, STATION station)
     list->first->station.tempPrec=0;
   }
 }
+
+
 void printList(LIST list )
 {
   if(list.first==NULL && list.last==NULL)
@@ -226,7 +233,7 @@ void loadListTab(LIST *tab , FILE *file)
         tab[i]=metro;
         break;
       case 3:
-        loadmetroX(&metro, str, file, '1', ':', 'b');
+        loadmetroX(&metro, str, file, '2', ':', 'b');
         tab[i]=metro;
         break;
       case 4:
@@ -351,49 +358,113 @@ void loadListTab(LIST *tab , FILE *file)
   }
     fclose(file);
 }
-void temps_entre_2stations(LIST *tab  , int num)
+void remplireserve(STATIONRES *tab,LIST *tab1)
 {
-    STRING station1 ;
-    STRING station2 ;
-    int d=0;
-    printf("Veuillez taper le nom de la station de départ stp \n");
-    fgets(station1, 20, stdin);
-    station1[strlen(station1)-1]='\0';
-    printf("Veuillez taper le nom de la station d'arrivée stp \n");
-    fgets(station2, 20, stdin);
-    station2[strlen(station2)-1]='\0';
-  printf("%s \n",station1);
-  printf("%s \n",station2);
-  
-    NODE * node1;
-    NODE * node2;
-  
-  int y=0;
-  d=1;
-    double temps =0 ;
-  if(d==1)
+  int z=0,j,i;
+  for (int i =0; i<33; i++)
   {
-    node1=tab[num].first;
-    while (node1!=NULL && y!=1) {
-      if(strcmp(node1->station.nomS, station1)==0)
-      {
-        node2=node1->ssuiv;
-        temps=node2->station.tempSuiv;
-        while (node2!=NULL) {
-          if(strcmp(node2->station.nomS, station2)==0)
-          {
-            y=1;
-          }
-          node2=node2->ssuiv;
-          temps=temps+node2->station.tempSuiv;
-        }
-        
-      }
-      node1=node1->ssuiv;
+    NODE* node;
+    LIST metro={NULL, NULL};
+    metro=tab1[i];
+    node=metro.first;
+    while(node!=NULL)
+    {
+      strncpy(tab[z].nomS, node->station.nomS,CHAI);
+      tab[z].Horaire=node->station.horaire;
+      z++;
+      node=node->ssuiv;
     }
-    
-  printf("Le temps entre ces 2 stations est %0.lf \n",temps);
+  }
+  for(int k = 0; k < z; k++)
+  {
+        for (int j = k + 1; j < z;) {
+           if (strcmp(tab[j].nomS,tab[k].nomS)==0)
+           {
+              for (int v = j; v < z; v++)
+              {
+                strcpy(tab[v].nomS, tab[v + 1].nomS);
+              }
+              z--;
+           } else
+              j++;
+        }
+    }
+  for(i=0;i<z-1;i++)
+      for(j=i+1;j<z;j++)
+          if ( tab[i].poids > tab[j].poids ) {
+            STATIONRES choc;
+              choc = tab[i];
+              tab[i] = tab[j];
+              tab[j] = choc;
+          }
+}
 
-    
+//void reechercheitineraire(SLIST reserve,LIST *tab1 , STRING depart , STRING arrive)
+//{
+////  SLIST itineraire={NULL, NULL};
+//  int j=0,position=0;
+//  while(pt!=NULL)
+//  {
+//    pt->station.poids=2000;
+//    pt->station.parent=NULL;
+//    pt=pt->ssuiv;
+//  }
+//  pt=reserve.first;
+//  int x=0;
+//  while (pt!=NULL && x==0)
+//  {
+//    if (strcmp(depart,pt->station.nomS)==0)
+//    {
+//      STATIONRES depart=pt->station;
+//      //Fonction qui supprime la stattion
+//      depart.poids=0;
+////      appendToListSTationReserve(&reserve, depart);
+//      x=1;
+//    }
+//  }
+//  pt=reserve.first;
+//  while (reserve.first!=NULL && reserve.last!=NULL) {
+//    STATIONRES premier= reserve.first->station;
+//    //delete reserve.first
+////    appendToListSTationReserve(&itineraire, premier);
+//    if(strcmp(arrive,premier.nomS)==0)
+//    {
+//
+//    }
+//
+//  }
+//
+//}
+void trier(STATIONRES *tab)
+{
+  int z=292;
+  for(i=0;i<z-1;i++)
+      for(j=i+1;j<z;j++)
+      {
+          if ( tab[i].poids > tab[j].poids )
+          {
+            STATIONRES choc;
+              choc = tab[i];
+              tab[i] = tab[j];
+              tab[j] = choc;
+          }
+      }
+}
+
+void deletestation(STATIONRES *tab , int position)
+{
+  for (i = position - 1; i < 293 - 1; i++)
+  {
+    tab[i] = tab[i+1];
   }
 }
+void deletestationtete(STATIONRES *tab )
+{
+  for (i = 0; i < 292; i++)
+  {
+    tab[i] = tab[i+1];
+  }
+}
+
+
+
