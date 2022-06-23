@@ -10,8 +10,10 @@
 int main(void)
 {
   FILE* file =NULL;
+  STATIONRES tab1[1000];
   file=fopen("/Users/ibrahimandiaye/Documents/INFO/itinerairemetro/itinerairemetro/metro.csv","r");
   LIST tab[40];
+  
 //  char str[CHAI];
 //  LIST metro={NULL, NULL};
   if(file != NULL)
@@ -23,6 +25,15 @@ int main(void)
   {
     printf("Impossible d'ouvrir le fichier \n ");
   }
-  temps_entre_2stations(tab, 1);
+  remplireserve(tab1,tab);
+  SLIST reserve = {NULL,NULL};
+  reserve = rempliReserve(tab);
+  printSList(reserve);
+//  for(int i=0;i<z;i++)
+//  {
+//    printf("Station %d = %s  // Horaire = %f  \n",i,tab1[i].nomS,tab1[i].Horaire);
+//  }
+//  printList(tab[0]);
   return 0;
 }
+
