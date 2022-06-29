@@ -117,7 +117,7 @@ void printList(LIST list )
 
 void loadmetroX(LIST *list,char* str , FILE* file , char a0 ,char b1 ,char c2)
 {
-  double temps[400]={0,};
+  double temps[400]={0,}; 
   int z=0,k=0;
   while (!feof(file))
   {
@@ -358,113 +358,225 @@ void loadListTab(LIST *tab , FILE *file)
   }
     fclose(file);
 }
-void remplireserve(STATIONRES *tab,LIST *tab1)
+void printSList(SLIST list )
 {
-  int z=0,j,i;
+  if(list.first==NULL && list.last==NULL)
+  {
+    printf("La liste est vide \n");
+  }
+  else
+  {
+    SNODE* node;
+    int i=1;
+    node=list.first;
+    while (node!=NULL)
+    {
+      printf("STATION : %s",node->station.nomS);
+      node=node->ssuiv;
+      i++;
+      printf("\n");
+    }
+    printf("STATION : %s",node->station.nomS);
+    printf("\nNombre STATION : %d\n" , i);
+  }
+  printf("\n");
+}
+void appendToListSTationReserve(SLIST* list, STATIONRES station)
+{
+  SNODE *node;
+  node = (SNODE*) calloc(1 ,sizeof(SNODE));
+  node->station=station;
+  if(list->last!=NULL && list->first!=NULL)
+  {
+    list->last->ssuiv=node;
+    list->last=node;
+  }
+  else
+  {
+    list->first=node;
+    list->last=node;
+  }
+}
+void remplireserve(SLIST reserve,LIST *tab1)
+{
+//  int z=0,j,i;
+  STRING name;
   for (int i =0; i<33; i++)
   {
     NODE* node;
     LIST metro={NULL, NULL};
     metro=tab1[i];
     node=metro.first;
-    while(node!=NULL)
+    int x=1;
+    while(node!=NULL )
     {
-      strncpy(tab[z].nomS, node->station.nomS,CHAI);
-      tab[z].Horaire=node->station.horaire;
-      z++;
+      strncpy(name,node->station.nomS,CHAI);
+      if (node==metro.first)
+      {
+        STATIONRES station ;
+        strncpy(station.nomS, name, CHAI);
+        appendToListSTationReserve(&reserve, station);
+      }
+      else
+      {
+        SNODE *node2 = reserve.first->ssuiv;
+        while(node2!=NULL && x==1)
+        {
+          if(reserve.first==reserve.last)
+          {
+            STATIONRES station ;
+            strncpy(station.nomS, name, CHAI);
+            appendToListSTationReserve(&reserve,station);
+            printSList(reserve);
+            x=0;
+          }
+          if (node2!=reserve.last)
+          {
+            if(strcmp(node2->station.nomS,name)==0)
+            {
+              x=0;
+            }
+            else
+            {
+              node2=node2->ssuiv;
+            }
+          }
+          else
+          {
+              if(strcmp(reserve.last->station.nomS, name)==0 )
+              {
+                x=0;
+              }
+              else
+              {
+                STATIONRES station ;
+                strncpy(station.nomS, name, CHAI);
+                appendToListSTationReserve(&reserve,station);
+                printSList(reserve);
+                x=0;
+              }
+          }
+          
+        }
+      }
       node=node->ssuiv;
     }
   }
-  for(int k = 0; k < z; k++)
+  printSList(reserve);
+  SNODE *position = reserve.first;
+  SNODE *vparcours = reserve.last;
+  //on verifie si une ligne apparait deux fois on la supprime
+  while (position != reserve.last)
   {
-        for (int j = k + 1; j < z;) {
-           if (strcmp(tab[j].nomS,tab[k].nomS)==0)
-           {
-              for (int v = j; v < z; v++)
-              {
-                strcpy(tab[v].nomS, tab[v + 1].nomS);
-              }
-              z--;
-           } else
-              j++;
-        }
+    while (vparcours != position && vparcours != reserve.first)
+    {
+      if (strcmp(position->station.nomS, vparcours->station.nomS)!=0)
+        removeStation(&reserve, vparcours->station.nomS);
+      printSList(reserve);
+      vparcours = vparcours->sprec;
     }
-  for(i=0;i<z-1;i++)
-      for(j=i+1;j<z;j++)
-          if ( tab[i].poids > tab[j].poids ) {
-            STATIONRES choc;
-              choc = tab[i];
-              tab[i] = tab[j];
-              tab[j] = choc;
-          }
+    vparcours = reserve.last;
+    position = position->ssuiv;
+  }
 }
 
-//void reechercheitineraire(SLIST reserve,LIST *tab1 , STRING depart , STRING arrive)
+//void insert(LIGNE *pLigne, STATION *station)
 //{
-////  SLIST itineraire={NULL, NULL};
-//  int j=0,position=0;
-//  while(pt!=NULL)
+//  STATION *vParcours = pLigne->premiereStation;
+//  vParcours = pLigne->premiereStation;
+//  if (pLigne->premiereStation == NULL)
 //  {
-//    pt->station.poids=2000;
-//    pt->station.parent=NULL;
-//    pt=pt->ssuiv;
+//    station->suiv = NULL;
+//    pLigne->premiereStation = station;
+//    pLigne->derniereStation = station;
 //  }
-//  pt=reserve.first;
-//  int x=0;
-//  while (pt!=NULL && x==0)
+//  while (vParcours != NULL)
 //  {
-//    if (strcmp(depart,pt->station.nomS)==0)
+//    if (station->poids < vParcours->poids)
 //    {
-//      STATIONRES depart=pt->station;
-//      //Fonction qui supprime la stattion
-//      depart.poids=0;
-////      appendToListSTationReserve(&reserve, depart);
-//      x=1;
+//      if (vParcours == pLigne->premiereStation)
+//      {
+//        vParcours->prec = station;
+//        pLigne->premiereStation = station;
+//        station->suiv = vParcours;
+//        break;
+//      }
+//      else
+//      {
+//        station->prec = vParcours->prec;
+//        vParcours->prec->suiv = station;
+//        vParcours->prec = station;
+//        station->suiv = vParcours;
+//        break;
+//      }
 //    }
+//    vParcours = vParcours->suiv;
 //  }
-//  pt=reserve.first;
-//  while (reserve.first!=NULL && reserve.last!=NULL) {
-//    STATIONRES premier= reserve.first->station;
-//    //delete reserve.first
-////    appendToListSTationReserve(&itineraire, premier);
-//    if(strcmp(arrive,premier.nomS)==0)
-//    {
-//
-//    }
-//
-//  }
-//
+//  vParcours = pLigne->derniereStation;
+//  if (station->poids >= vParcours->poids)
+//    appendToLigne(pLigne, *station);
 //}
-void trier(STATIONRES *tab)
+STATIONRES removeHeadFromList(SLIST *list)
 {
-  int z=292;
-  for(i=0;i<z-1;i++)
-      for(j=i+1;j<z;j++)
+  SNODE *stationToRemove = NULL;
+  if (list->first==NULL)
+    printf("La liste est vide \n ");
+  else
+  {
+    stationToRemove = list->first;
+    list->first = list->first->ssuiv;
+    if (list->first==NULL) { /*printf("ErreUr liste Vide");*/ }
+    else
+      list->first->sprec= NULL;
+  }
+  return  stationToRemove->station;
+}
+STATIONRES removeTailFromList(SLIST *list)
+{
+  SNODE *stationToRemove=NULL;
+  if(list->first==NULL && list->last==NULL)
+  {
+    printf("la liste est vide \n");
+  }
+  else
+  {
+    stationToRemove = list->last;
+    list->last = list->last->sprec;
+    if (list->first==NULL)
+    {
+      list->first= NULL;
+      list->last= NULL;
+    }
+//    else
+//    {
+//      list->last->ssuiv=null;
+//    }
+  }
+  return stationToRemove->station;
+}
+STATIONRES removeStation(SLIST * list, STRING name )
+{
+  PSNODE stationToRemove=list->first;
+  if (list->first==NULL)
+    printf("La liste est vide \n ");
+  else
+  {
+    // Liste Update
+    if (!strcmp(list->first->station.nomS,name))
+      stationToRemove->station=removeHeadFromList(list);
+    else if (!strcmp(list->last->station.nomS, name))
+      stationToRemove->station = removeTailFromList(list);
+    else
+    {
+      stationToRemove = list->first->ssuiv;
+      while (stationToRemove != list->last && strcmp(stationToRemove->station.nomS, name)!=0)
       {
-          if ( tab[i].poids > tab[j].poids )
-          {
-            STATIONRES choc;
-              choc = tab[i];
-              tab[i] = tab[j];
-              tab[j] = choc;
-          }
+        stationToRemove = stationToRemove->ssuiv;
       }
-}
-
-void deletestation(STATIONRES *tab , int position)
-{
-  for (i = position - 1; i < 293 - 1; i++)
-  {
-    tab[i] = tab[i+1];
+      stationToRemove->sprec->ssuiv = stationToRemove->ssuiv;
+      stationToRemove->ssuiv->sprec = stationToRemove->sprec;
+    }
   }
+  return stationToRemove->station;
 }
-void deletestationtete(STATIONRES *tab )
-{
-  for (i = 0; i < 292; i++)
-  {
-    tab[i] = tab[i+1];
-  }
-}
-
-
 
