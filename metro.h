@@ -50,11 +50,7 @@ typedef struct
   PSNODE first;
   PSNODE last;
 }SLIST;
-typedef struct _TabLigne
-{
-  STRING nameLigne;
-  LIST list;
-}TABLIGNE ,*PTABLIGNE;
+
 void printStation(STATION station , int num);
 const char* getNomStation(STATION *station);
 void setName(STATION *station ,STRING name );
@@ -68,11 +64,16 @@ void loadmetroX(LIST *list,char* str , FILE* file, char a0 ,char b1 ,char c2);
 void loadmetroXX(LIST *list,char* str , FILE* file , char a0 ,char b1 ,char c3);
 void loadmetroXbis(LIST *list,char* str , FILE* file , char a0 ,char b1 ,char c3);
 void temps_entre_2stations(LIST *tab  , int num);
-void remplireserve(STATIONRES *tab,LIST *tab1);
 void reechercheitineraire(SLIST reserve,LIST *tab1 , STRING depart , STRING arrive);
-SLIST rempliReserve(LIST *tab1);
+void remplireserve(SLIST reserve,LIST *tab1);
 void printSList(SLIST list );
 PSNODE suprimerDoublons(PSNODE snode1, STRING name);
+void TrierSLIST(SLIST reserve);
+STATION removeStationX(SLIST * list, STRING name );
+STATIONRES removeHeadFromList(SLIST *list);
+STATIONRES removeStation(SLIST * list, STRING name);
+STATIONRES removeTailFromList(SLIST *list);
+SLIST remplieReserve(LIST *tab1);
 
 
  #endif /* metro_h */
